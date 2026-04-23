@@ -1,114 +1,201 @@
 :root {
-    --bg-color: #121212;
-    --panel-bg: #1e1e1e;
-    --text-main: #e0e0e0;
-    --accent: #bb86fc;
-    --success: #03dac6;
-    --danger: #cf6679;
+    --bg-color: #000000;
+    --card-bg: #1c1c1e;
+    --text-main: #ffffff;
+    --text-secondary: #ebebf599;
+    --accent: #0a84ff; /* Azul clássico iOS */
+    --success: #32d74b;
+    --danger: #ff453a;
+    --tab-bar-bg: rgba(28, 28, 30, 0.85);
 }
 
 body {
     margin: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    /* Fonte nativa da Apple */
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     background-color: var(--bg-color);
     color: var(--text-main);
+    padding-bottom: calc(80px + env(safe-area-inset-bottom)); /* Espaço para o menu inferior */
+    -webkit-tap-highlight-color: transparent;
 }
 
-header {
+/* Cabeçalho */
+.ios-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 15px 30px;
-    background-color: var(--panel-bg);
-    border-bottom: 2px solid #333;
+    padding: calc(15px + env(safe-area-inset-top)) 20px 15px;
+    background-color: var(--bg-color);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.ios-header h1 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 700;
 }
 
 .connection-panel {
     display: flex;
-    align-items: center;
-    gap: 15px;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 5px;
 }
 
-button {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
+/* Botões Padrão iOS */
+.ios-btn {
     background-color: var(--accent);
-    color: #000;
-    font-weight: bold;
+    color: #fff;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 14px;
     cursor: pointer;
-    transition: 0.3s;
+    transition: transform 0.1s, opacity 0.2s;
 }
+.ios-btn:active { transform: scale(0.95); opacity: 0.8; }
 
-button:hover { filter: brightness(1.2); }
-.btn-success { background-color: var(--success); }
-.btn-danger { background-color: var(--danger); color: white; }
+.btn-play { background-color: var(--success); width: 48%; }
+.btn-stop { background-color: var(--danger); width: 48%; }
+.btn-export { background-color: var(--card-bg); color: var(--accent); width: 100%; margin-bottom: 15px; }
 
-#bt-status {
-    font-weight: bold;
-}
+#bt-status { font-size: 12px; font-weight: 600; }
 .status-disconnected { color: var(--danger); }
 .status-connected { color: var(--success); }
 
-#main-menu {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
+/* Área de Conteúdo */
+.ios-main {
+    padding: 0 16px;
+}
+
+.app-view {
+    display: none;
+    animation: fadeIn 0.3s ease-in-out;
+}
+.app-view.active { display: block; }
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Cartões (Cards) Estilo iOS */
+.ios-card {
+    background-color: var(--card-bg);
+    border-radius: 16px;
     padding: 20px;
-    background-color: #1a1a1a;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+.ios-card h2 {
+    margin-top: 0;
+    font-size: 20px;
+}
+
+/* Controles de Input */
+.controls, .control-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    font-size: 15px;
+}
+
+.controls-stack { display: flex; flex-direction: column; gap: 15px; }
+.audio-buttons { display: flex; justify-content: space-between; margin-top: 10px; }
+
+.ios-input {
+    background-color: #2c2c2e;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 8px;
+    text-align: center;
+    width: 60px;
+    font-size: 16px;
+}
+
+/* Sliders (Range) */
+.ios-slider {
+    -webkit-appearance: none;
+    width: 50%;
+    height: 4px;
+    background: #3a3a3c;
+    border-radius: 2px;
+    outline: none;
+}
+.ios-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #fff;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+}
+
+/* Gráficos */
+.chart-container {
+    position: relative;
+    height: 300px;
+    width: 100%;
+    margin-top: 15px;
+}
+.sleep-chart-wrapper { height: 400px; }
+
+.warning {
+    background-color: rgba(255, 214, 10, 0.2);
+    color: #ffd60a;
+    padding: 12px;
+    border-radius: 10px;
+    font-size: 14px;
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.beat-display {
+    text-align: center;
+    background: #2c2c2e;
+    padding: 10px;
+    border-radius: 10px;
+    margin: 10px 0;
+}
+
+/* Barra de Navegação Inferior (Tab Bar iOS) */
+.ios-tab-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: var(--tab-bar-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0 calc(10px + env(safe-area-inset-bottom));
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    z-index: 100;
 }
 
 .nav-btn {
-    background-color: #333;
-    color: var(--text-main);
-}
-.nav-btn.active { background-color: var(--accent); color: #000; }
-
-main {
-    padding: 20px;
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
-.app-view { display: none; }
-.app-view.active { display: block; }
-
-.controls {
-    background-color: var(--panel-bg);
-    padding: 15px;
-    border-radius: 8px;
-    margin-bottom: 20px;
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 11px;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 15px;
+    gap: 4px;
+    cursor: pointer;
+    transition: color 0.2s;
 }
 
-.warning {
-    background-color: #4a4a00;
-    color: #ffff8d;
-    padding: 10px;
-    border-radius: 5px;
-    margin-bottom: 15px;
-    text-align: center;
-}
+.nav-btn .icon { font-size: 24px; filter: grayscale(100%) opacity(0.6); }
 
-.chart-container {
-    position: relative;
-    height: 400px;
-    width: 100%;
-    background-color: var(--panel-bg);
-    border-radius: 8px;
-    padding: 10px;
-}
-
-.sleep-chart-wrapper {
-    height: 500px;
-}
-
-input[type=range], input[type=number] {
-    background: #333;
-    color: white;
-    border: 1px solid #555;
-    padding: 5px;
-    border-radius: 4px;
-}style.css
+.nav-btn.active { color: var(--accent); font-weight: 600; }
+.nav-btn.active .icon { filter: grayscale(0%) opacity(1); }
