@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Athena Neuro-Hub</title>
+    <link rel="stylesheet" href="style.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/rxjs/6.6.7/rxjs.umd.min.js"></script>
+    <script src="https://unpkg.com/muse-js@3.3.0/dist/muse.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Athena Neuro-Hub</h1>
+        <div class="connection-panel">
+            <button id="btn-connect">Connect Muse S</button>
+            <span id="bt-status" class="status-disconnected">Disconnected</span>
+        </div>
+    </header>
+
+    <nav id="main-menu">
+        <button class="nav-btn active" data-target="app-monitor">1. Real-Time Monitor</button>
+        <button class="nav-btn" data-target="app-meditation">2. Binaural Meditation</button>
+        <button class="nav-btn" data-target="app-sleep">3. Sleep Monitor</button>
+    </nav>
+
+    <main>
+        <section id="app-monitor" class="app-view active">
+            <h2>Real-Time Brainwaves</h2>
+            <div class="controls">
+                <label for="smoothing-window">Smoothing Window (seconds): </label>
+                <input type="number" id="smoothing-window" value="3" min="1" max="10">
+            </div>
+            <div class="chart-container">
+                <canvas id="monitor-chart"></canvas>
+            </div>
+        </section>
+
+        <section id="app-meditation" class="app-view hidden">
+            <h2>Binaural Beats Meditation</h2>
+            <div class="warning">🎧 Please wear stereo headphones for this module to work.</div>
+            
+            <div class="controls binaural-controls">
+                <div class="control-group">
+                    <label>Left Ear (Hz): <span id="val-left">200</span></label>
+                    <input type="range" id="freq-left" min="100" max="400" value="200">
+                </div>
+                <div class="control-group">
+                    <label>Right Ear (Hz): <span id="val-right">210</span></label>
+                    <input type="range" id="freq-right" min="100" max="400" value="210">
+                </div>
+                <div class="control-group">
+                    <p>Beat Frequency: <strong id="beat-freq">10 Hz (Alpha)</strong></p>
+                </div>
+                <div class="audio-buttons">
+                    <button id="btn-audio-play" class="btn-success">Play / Update</button>
+                    <button id="btn-audio-stop" class="btn-danger">Stop</button>
+                </div>
+            </div>
+            <div class="chart-container">
+                <canvas id="meditation-chart"></canvas>
+            </div>
+        </section>
+
+        <section id="app-sleep" class="app-view hidden">
+            <h2>Sleep Monitor (Long Session)</h2>
+            <div class="controls">
+                <label for="sleep-window">View Window (Minutes): </label>
+                <input type="number" id="sleep-window" value="10" min="1" max="600">
+                <button id="btn-export" class="btn-success">Export Data (CSV)</button>
+            </div>
+            <div class="chart-container sleep-chart-wrapper">
+                <canvas id="sleep-chart"></canvas>
+            </div>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>index.html

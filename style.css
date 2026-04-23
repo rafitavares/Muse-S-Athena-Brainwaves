@@ -1,0 +1,114 @@
+:root {
+    --bg-color: #121212;
+    --panel-bg: #1e1e1e;
+    --text-main: #e0e0e0;
+    --accent: #bb86fc;
+    --success: #03dac6;
+    --danger: #cf6679;
+}
+
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-main);
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 30px;
+    background-color: var(--panel-bg);
+    border-bottom: 2px solid #333;
+}
+
+.connection-panel {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    background-color: var(--accent);
+    color: #000;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+button:hover { filter: brightness(1.2); }
+.btn-success { background-color: var(--success); }
+.btn-danger { background-color: var(--danger); color: white; }
+
+#bt-status {
+    font-weight: bold;
+}
+.status-disconnected { color: var(--danger); }
+.status-connected { color: var(--success); }
+
+#main-menu {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    padding: 20px;
+    background-color: #1a1a1a;
+}
+
+.nav-btn {
+    background-color: #333;
+    color: var(--text-main);
+}
+.nav-btn.active { background-color: var(--accent); color: #000; }
+
+main {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.app-view { display: none; }
+.app-view.active { display: block; }
+
+.controls {
+    background-color: var(--panel-bg);
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.warning {
+    background-color: #4a4a00;
+    color: #ffff8d;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.chart-container {
+    position: relative;
+    height: 400px;
+    width: 100%;
+    background-color: var(--panel-bg);
+    border-radius: 8px;
+    padding: 10px;
+}
+
+.sleep-chart-wrapper {
+    height: 500px;
+}
+
+input[type=range], input[type=number] {
+    background: #333;
+    color: white;
+    border: 1px solid #555;
+    padding: 5px;
+    border-radius: 4px;
+}style.css
