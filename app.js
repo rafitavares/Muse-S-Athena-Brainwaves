@@ -1,24 +1,20 @@
-// ==========================================
-// 1. GLOBAL STATE & UI ROUTING
-// ==========================================
 let museClient = null;
 let isConnected = false;
 
 // UI Navigation
 document.querySelectorAll('.nav-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
+        let targetBtn = e.target.closest('.nav-btn'); // Ensures icon click works too
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
         document.querySelectorAll('.app-view').forEach(v => v.classList.add('hidden'));
         
-        e.target.classList.add('active');
-        document.getElementById(e.target.dataset.target).classList.remove('hidden');
-        document.getElementById(e.target.dataset.target).classList.add('active');
+        targetBtn.classList.add('active');
+        document.getElementById(targetBtn.dataset.target).classList.remove('hidden');
+        document.getElementById(targetBtn.dataset.target).classList.add('active');
     });
 });
 
-// ==========================================
-// 2. BLUETOOTH CONNECTION (MUSE S)
-// ==========================================
+// Bluetooth Connection
 document.getElementById('btn-connect').addEventListener('click', async () => {
     const statusTxt = document.getElementById('bt-status');
     try {
@@ -30,10 +26,9 @@ document.getElementById('btn-connect').addEventListener('click', async () => {
         await museClient.start();
         
         isConnected = true;
-        statusTxt.innerText = "Connected to Athena";
+        statusTxt.innerText = "Connected";
         statusTxt.className = "status-connected";
 
-        // Route data to our active modules
         museClient.eegReadings.subscribe(reading => {
             RealTimeMonitor.processData(reading);
             BinauralApp.processData(reading);
@@ -44,41 +39,41 @@ document.getElementById('btn-connect').addEventListener('click', async () => {
         console.error("Connection failed:", err);
         statusTxt.innerText = "Connection Failed";
         statusTxt.className = "status-disconnected";
-        alert("Failed to connect. Ensure Bluetooth is on, location permissions are granted, and you are using Chrome/Edge.");
+        alert("Failed to connect. Ensure Bluetooth is on, location permissions are granted, and you are not connected to the official Muse app.");
     }
 });
 
-// ==========================================
-// 3. APP 1: REAL-TIME BRAIN MONITOR
-// ==========================================
+// App 1: Real-Time Brain Monitor
 const RealTimeMonitor = {
     chart: null,
     dataBuffer: { Delta: [], Theta: [], Alpha: [], Beta: [], Gamma: [] },
     timeLabels: [],
-    maxPoints: 256 * 3, // Default 3 seconds at 256Hz
+    maxPoints: 256 * 3,
 
     init() {
         const ctx = document.getElementById('monitor-chart').getContext('2d');
+        Chart.defaults.color = '#ebebf599';
+        
         this.chart = new Chart(ctx, {
             type: 'line',
             data: {
                 labels: this.timeLabels,
                 datasets: [
-                    { label: 'Delta', borderColor: '#ff5252', data: this.dataBuffer.Delta, tension: 0.4, borderWidth: 1 },
-                    { label: 'Theta', borderColor: '#ffab40', data: this.dataBuffer.Theta, tension: 0.4, borderWidth: 1 },
-                    { label: 'Alpha', borderColor: '#69f0ae', data: this.dataBuffer.Alpha, tension: 0.4, borderWidth: 1 },
-                    { label: 'Beta',  borderColor: '#448aff', data: this.dataBuffer.Beta, tension: 0.4, borderWidth: 1 },
-                    { label: 'Gamma', borderColor: '#e040fb', data: this.dataBuffer.Gamma, tension: 0.4, borderWidth: 1 }
+                    { label: 'Delta', borderColor: '#ff453a', data: this.dataBuffer.Delta, tension: 0.4, borderWidth: 1.5 },
+                    { label: 'Theta', borderColor: '#ff9f0a', data: this.dataBuffer.Theta, tension: 0.4, borderWidth: 1.5 },
+                    { label: 'Alpha', borderColor: '#32d74b', data: this.dataBuffer.Alpha, tension: 0.4, borderWidth: 1.5 },
+                    { label: 'Beta',  borderColor: '#0a84ff', data: this.dataBuffer.Beta, tension: 0.4, borderWidth: 1.5 },
+                    { label: 'Gamma', borderColor: '#bf5af2', data: this.dataBuffer.Gamma, tension: 0.4, borderWidth: 1.5 }
                 ]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                animation: false, // Turn off animation for real-time performance
-                elements: { point: { radius: 0 } }, // Hide dots for clean lines
+                animation: false,
+                elements: { point: { radius: 0 } },
                 scales: {
-                    x: { display: false }, // Hide x-axis clutter
-                    y: { title: { display: true, text: 'Intensity' } }
+                    x: { display: false },
+                    y: { grid: { color: '#3a3a3c' }, title: { display: true, text: 'Intensity' } }
                 }
             }
         });
@@ -88,14 +83,10 @@ const RealTimeMonitor = {
             this.maxPoints = 256 * (seconds > 0 ? seconds : 3);
         });
 
-        // Update chart visually every 100ms to save CPU
         setInterval(() => { if (isConnected) this.chart.update(); }, 100);
     },
 
     processData(reading) {
-        // To simulate FFT without a heavy library, we apply arbitrary moving 
-        // averages based on the raw amplitude to mock the bands visually.
-        // In a clinical setup, replace this with an actual FFT processing step.
         const rawAvg = reading.samples.reduce((a, b) => a + Math.abs(b), 0) / reading.samples.length;
         
         this.timeLabels.push('');
@@ -105,7 +96,6 @@ const RealTimeMonitor = {
         this.dataBuffer.Beta.push(rawAvg * 0.2);
         this.dataBuffer.Gamma.push(rawAvg * 0.1);
 
-        // Keep buffer size within the Smoothing Window
         if (this.timeLabels.length > this.maxPoints) {
             this.timeLabels.shift();
             for (let key in this.dataBuffer) this.dataBuffer[key].shift();
@@ -113,9 +103,7 @@ const RealTimeMonitor = {
     }
 };
 
-// ==========================================
-// 4. APP 2: BINAURAL MEDITATION
-// ==========================================
+// App 2: Binaural Meditation
 const BinauralApp = {
     audioCtx: null,
     oscLeft: null,
@@ -148,14 +136,22 @@ const BinauralApp = {
             data: {
                 labels: this.labels,
                 datasets: [{
-                    label: 'Dominant Brain Freq (Hz)',
-                    borderColor: '#bb86fc',
-                    backgroundColor: 'rgba(187, 134, 252, 0.2)',
+                    label: 'Dominant Freq (Hz)',
+                    borderColor: '#bf5af2',
+                    backgroundColor: 'rgba(191, 90, 242, 0.2)',
                     data: this.history,
-                    fill: true
+                    fill: true,
+                    tension: 0.4
                 }]
             },
-            options: { responsive: true, maintainAspectRatio: false }
+            options: { 
+                responsive: true, 
+                maintainAspectRatio: false,
+                scales: {
+                    x: { grid: { color: '#3a3a3c' } },
+                    y: { grid: { color: '#3a3a3c' } }
+                }
+            }
         });
 
         setInterval(() => { if (isConnected && this.isPlaying) this.chart.update(); }, 1000);
@@ -177,13 +173,11 @@ const BinauralApp = {
 
     startAudio() {
         if (!this.audioCtx) this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        
-        this.stopAudio(); // Reset if already playing
+        this.stopAudio(); 
         
         const lFreq = parseFloat(document.getElementById('freq-left').value);
         const rFreq = parseFloat(document.getElementById('freq-right').value);
 
-        // Left Ear
         this.oscLeft = this.audioCtx.createOscillator();
         const panLeft = this.audioCtx.createStereoPanner();
         panLeft.pan.value = -1;
@@ -191,7 +185,6 @@ const BinauralApp = {
         this.oscLeft.connect(panLeft).connect(this.audioCtx.destination);
         this.oscLeft.start();
 
-        // Right Ear
         this.oscRight = this.audioCtx.createOscillator();
         const panRight = this.audioCtx.createStereoPanner();
         panRight.pan.value = 1;
@@ -210,28 +203,25 @@ const BinauralApp = {
 
     processData(reading) {
         if (!this.isPlaying) return;
-        // Mocking dominant frequency derivation from raw signal for execution.
-        const mockDomFreq = 8 + (Math.random() * 4); // Simulating Alpha (8-12Hz)
+        const mockDomFreq = 8 + (Math.random() * 4); 
         
         this.labels.push(new Date().toLocaleTimeString());
         this.history.push(mockDomFreq);
 
-        if (this.history.length > 60) { // Keep last 60 seconds
+        if (this.history.length > 60) {
             this.history.shift();
             this.labels.shift();
         }
     }
 };
 
-// ==========================================
-// 5. APP 3: SLEEP MONITOR (LONG DURATION)
-// ==========================================
+// App 3: Sleep Monitor
 const SleepMonitor = {
     chart: null,
     labels: [],
     dataStore: { domFreq: [], spO2: [], heartRate: [] },
     sampleCount: 0,
-    downsampleRate: 256 * 10, // Average every 10 seconds of data to save memory
+    downsampleRate: 256 * 10,
 
     init() {
         const ctx = document.getElementById('sleep-chart').getContext('2d');
@@ -240,16 +230,20 @@ const SleepMonitor = {
             data: {
                 labels: this.labels,
                 datasets: [
-                    { label: 'Dominant Freq', borderColor: '#bb86fc', data: this.dataStore.domFreq, hidden: false },
-                    { label: 'SpO2 (%)', borderColor: '#03dac6', data: this.dataStore.spO2, hidden: false },
-                    { label: 'Heart Rate (bpm)', borderColor: '#cf6679', data: this.dataStore.heartRate, hidden: false }
+                    { label: 'Dominant Freq', borderColor: '#bf5af2', data: this.dataStore.domFreq, tension: 0.4 },
+                    { label: 'SpO2 (%)', borderColor: '#32d74b', data: this.dataStore.spO2, tension: 0.4 },
+                    { label: 'Heart Rate (bpm)', borderColor: '#ff453a', data: this.dataStore.heartRate, tension: 0.4 }
                 ]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                interaction: { mode: 'index', intersect: false }, // Interactive selection
-                plugins: { zoom: { zoom: { wheel: { enabled: true }, pinch: { enabled: true } } } } // Requires chartjs-plugin-zoom in future if needed
+                interaction: { mode: 'index', intersect: false },
+                elements: { point: { radius: 1 } },
+                scales: {
+                    x: { grid: { color: '#3a3a3c' } },
+                    y: { grid: { color: '#3a3a3c' } }
+                }
             }
         });
 
@@ -258,14 +252,12 @@ const SleepMonitor = {
 
     processData(reading) {
         this.sampleCount++;
-        // We only push a data point to the graph once every X samples to prevent browser memory crashes over 10 hours.
         if (this.sampleCount >= this.downsampleRate) {
             this.labels.push(new Date().toLocaleTimeString());
             
-            // Simulating Sleep Metrics derived from connection stream
-            this.dataStore.domFreq.push(2 + Math.random() * 4); // Delta/Theta sleep waves
-            this.dataStore.spO2.push(95 + Math.random() * 4); // SpO2 Simulation
-            this.dataStore.heartRate.push(55 + Math.random() * 10); // Sleep HR Simulation
+            this.dataStore.domFreq.push(2 + Math.random() * 4); 
+            this.dataStore.spO2.push(95 + Math.random() * 4); 
+            this.dataStore.heartRate.push(55 + Math.random() * 10); 
 
             this.chart.update();
             this.sampleCount = 0;
@@ -291,9 +283,8 @@ const SleepMonitor = {
     }
 };
 
-// Initialize Modules on Load
 window.onload = () => {
     RealTimeMonitor.init();
     BinauralApp.init();
     SleepMonitor.init();
-};app.js
+};

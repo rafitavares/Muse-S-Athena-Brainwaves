@@ -3,7 +3,7 @@
     --card-bg: #1c1c1e;
     --text-main: #ffffff;
     --text-secondary: #ebebf599;
-    --accent: #0a84ff; /* Azul clássico iOS */
+    --accent: #0a84ff;
     --success: #32d74b;
     --danger: #ff453a;
     --tab-bar-bg: rgba(28, 28, 30, 0.85);
@@ -11,15 +11,13 @@
 
 body {
     margin: 0;
-    /* Fonte nativa da Apple */
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     background-color: var(--bg-color);
     color: var(--text-main);
-    padding-bottom: calc(80px + env(safe-area-inset-bottom)); /* Espaço para o menu inferior */
+    padding-bottom: calc(80px + env(safe-area-inset-bottom));
     -webkit-tap-highlight-color: transparent;
 }
 
-/* Cabeçalho */
 .ios-header {
     display: flex;
     justify-content: space-between;
@@ -44,7 +42,6 @@ body {
     gap: 5px;
 }
 
-/* Botões Padrão iOS */
 .ios-btn {
     background-color: var(--accent);
     color: #fff;
@@ -66,7 +63,6 @@ body {
 .status-disconnected { color: var(--danger); }
 .status-connected { color: var(--success); }
 
-/* Área de Conteúdo */
 .ios-main {
     padding: 0 16px;
 }
@@ -82,7 +78,6 @@ body {
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* Cartões (Cards) Estilo iOS */
 .ios-card {
     background-color: var(--card-bg);
     border-radius: 16px;
@@ -96,7 +91,6 @@ body {
     font-size: 20px;
 }
 
-/* Controles de Input */
 .controls, .control-row {
     display: flex;
     justify-content: space-between;
@@ -119,7 +113,6 @@ body {
     font-size: 16px;
 }
 
-/* Sliders (Range) */
 .ios-slider {
     -webkit-appearance: none;
     width: 50%;
@@ -139,7 +132,6 @@ body {
     box-shadow: 0 2px 5px rgba(0,0,0,0.5);
 }
 
-/* Gráficos */
 .chart-container {
     position: relative;
     height: 300px;
@@ -166,7 +158,6 @@ body {
     margin: 10px 0;
 }
 
-/* Barra de Navegação Inferior (Tab Bar iOS) */
 .ios-tab-bar {
     position: fixed;
     bottom: 0;
