@@ -3,7 +3,7 @@ let isRecording = false;
 let recordedData = [];
 let audioCtx, oscL, oscR;
 
-// Chart.js Estilo Moderno (Sem grades, linhas limpas)
+// Chart.js Estilo Moderno
 Chart.defaults.color = '#a1a1aa';
 Chart.defaults.font.family = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
 
@@ -17,7 +17,6 @@ const commonChartOptions = {
     }
 };
 
-// Inicializando Gráficos
 const ctxFreq = document.getElementById('chart-freq').getContext('2d');
 const chartFreq = new Chart(ctxFreq, {
     type: 'line',
@@ -39,7 +38,6 @@ const chartPulse = new Chart(ctxPulse, {
     options: commonChartOptions
 });
 
-// Websocket e Recepção de Dados
 document.getElementById('btn-connect').addEventListener('click', () => {
     const statusTxt = document.getElementById('status-text');
     const statusDot = document.getElementById('status-dot');
@@ -61,7 +59,9 @@ document.getElementById('btn-connect').addEventListener('click', () => {
         if (!isRunning) return;
         const d = JSON.parse(e.data);
         
-        // Atualiza Barras Percentuais
+        // MODIFICAÇÃO: Raio-X dos pacotes chegando. Aparecerá no F12 (Console)
+        console.log("Chegou do Python:", d);
+        
         const total = d.delta + d.theta + d.alpha + d.beta + d.gamma;
         if(total > 0) {
             ['gamma', 'beta', 'alpha', 'theta', 'delta'].forEach(wave => {
@@ -71,7 +71,6 @@ document.getElementById('btn-connect').addEventListener('click', () => {
             });
         }
 
-        // Atualiza Gráficos
         const time = new Date().toLocaleTimeString();
         [chartFreq, chartSpO2, chartPulse].forEach((c, i) => {
             const val = [d.dominant_freq, d.spo2, d.hr][i];
@@ -85,7 +84,6 @@ document.getElementById('btn-connect').addEventListener('click', () => {
     };
 });
 
-// Controles do Topo
 document.getElementById('btn-run').onclick = () => { 
     isRunning = true; 
     document.getElementById('btn-run').classList.add('active');
@@ -111,7 +109,6 @@ document.getElementById('btn-record').onclick = () => {
     }
 };
 
-// Modal de Salvamento
 function showSaveModal() {
     const now = new Date();
     document.getElementById('filename-input').value = `Athena_Record_${now.toLocaleDateString().replace(/\//g, '.')}`;
@@ -138,7 +135,6 @@ document.getElementById('btn-save-confirm').onclick = () => {
     document.getElementById('modal-save').classList.add('hidden');
 };
 
-// Motor de Áudio Binaural
 document.getElementById('btn-audio').onclick = () => {
     const btn = document.getElementById('btn-audio');
     
@@ -160,8 +156,8 @@ document.getElementById('btn-audio').onclick = () => {
     const pL = audioCtx.createStereoPanner();
     const pR = audioCtx.createStereoPanner();
     
-    pL.pan.value = -1; // Totalmente ouvido esquerdo
-    pR.pan.value = 1;  // Totalmente ouvido direito
+    pL.pan.value = -1; 
+    pR.pan.value = 1;  
     
     oscL.frequency.value = carrier;
     oscR.frequency.value = carrier + target;
