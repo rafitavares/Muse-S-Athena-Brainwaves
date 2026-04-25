@@ -2,82 +2,103 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Athena Neuro-Hub v2</title>
+    <title>Athena Pro Dashboard</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <header class="dashboard-header">
-        <div class="main-controls">
-            <button id="btn-run" class="btn active">Run</button>
-            <button id="btn-hold" class="btn">Hold</button>
-            <button id="btn-record" class="btn btn-rec">⏺ Record</button>
+    <header class="glass-header">
+        <div class="brand">
+            <span class="logo-icon">🧠</span> ATHENA <span class="badge">PRO</span>
         </div>
+        
+        <div class="main-controls">
+            <button id="btn-run" class="btn modern-btn active"><span class="icon">⏵</span> RUN</button>
+            <button id="btn-hold" class="btn modern-btn"><span class="icon">⏸</span> HOLD</button>
+            <button id="btn-record" class="btn record-btn"><span class="icon">⏺</span> RECORD</button>
+        </div>
+        
         <div class="connection-status">
+            <div id="status-dot" class="dot disconnected"></div>
             <span id="status-text">Disconnected</span>
-            <button id="btn-connect" class="btn-connect">Connect Muse</button>
+            <button id="btn-connect" class="btn connect-btn"><span class="icon">⚡</span> CONNECT</button>
         </div>
     </header>
 
-    <div class="dashboard-grid">
-        <aside class="brain-waves-panel">
-            <h3>Brain Waves (%)</h3>
-            <div class="wave-item">
-                <label>Gamma (30-80Hz) <span id="txt-gamma">0%</span></label>
-                <div class="bar-bg"><div id="bar-gamma" class="bar-fill gamma"></div></div>
-            </div>
-            <div class="wave-item">
-                <label>Beta (12-30Hz) <span id="txt-beta">0%</span></label>
-                <div class="bar-bg"><div id="bar-beta" class="bar-fill beta"></div></div>
-            </div>
-            <div class="wave-item">
-                <label>Alpha (8-12Hz) <span id="txt-alpha">0%</span></label>
-                <div class="bar-bg"><div id="bar-alpha" class="bar-fill alpha"></div></div>
-            </div>
-            <div class="wave-item">
-                <label>Theta (4-8Hz) <span id="txt-theta">0%</span></label>
-                <div class="bar-bg"><div id="bar-theta" class="bar-fill theta"></div></div>
-            </div>
-            <div class="wave-item">
-                <label>Delta (0.5-4Hz) <span id="txt-delta">0%</span></label>
-                <div class="bar-bg"><div id="bar-delta" class="bar-fill delta"></div></div>
+    <div class="dashboard-layout">
+        
+        <aside class="panel left-panel">
+            <h3>Brain Waves Activity</h3>
+            <div class="waves-container">
+                <div class="wave-item">
+                    <label>Gamma <span class="hz">(30-80Hz)</span> <span id="txt-gamma" class="perc">0%</span></label>
+                    <div class="bar-bg"><div id="bar-gamma" class="bar-fill gamma"></div></div>
+                </div>
+                <div class="wave-item">
+                    <label>Beta <span class="hz">(12-30Hz)</span> <span id="txt-beta" class="perc">0%</span></label>
+                    <div class="bar-bg"><div id="bar-beta" class="bar-fill beta"></div></div>
+                </div>
+                <div class="wave-item">
+                    <label>Alpha <span class="hz">(8-12Hz)</span> <span id="txt-alpha" class="perc">0%</span></label>
+                    <div class="bar-bg"><div id="bar-alpha" class="bar-fill alpha"></div></div>
+                </div>
+                <div class="wave-item">
+                    <label>Theta <span class="hz">(4-8Hz)</span> <span id="txt-theta" class="perc">0%</span></label>
+                    <div class="bar-bg"><div id="bar-theta" class="bar-fill theta"></div></div>
+                </div>
+                <div class="wave-item">
+                    <label>Delta <span class="hz">(0.5-4Hz)</span> <span id="txt-delta" class="perc">0%</span></label>
+                    <div class="bar-bg"><div id="bar-delta" class="bar-fill delta"></div></div>
+                </div>
             </div>
         </aside>
 
-        <aside class="binaural-panel">
-            <h3>Binaural Controls</h3>
-            <div class="input-group">
-                <label>Target (Hz):</label>
-                <input type="number" id="bin-target" value="10">
+        <aside class="right-panel">
+            <div class="panel binaural-panel">
+                <h3>🎧 Binaural Engine</h3>
+                <div class="binaural-controls">
+                    <div class="input-group">
+                        <label>Target (Hz)</label>
+                        <input type="number" id="bin-target" value="10">
+                    </div>
+                    <div class="input-group">
+                        <label>Carrier (Hz)</label>
+                        <input type="number" id="bin-carrier" value="400">
+                    </div>
+                    <button id="btn-audio" class="btn audio-btn">Start Synth</button>
+                </div>
             </div>
-            <div class="input-group">
-                <label>Carrier (Hz):</label>
-                <input type="number" id="bin-carrier" value="400">
+
+            <div class="panel vitals-panel">
+                <h3>🫁 SpO2 Oxygenation (%)</h3>
+                <div class="small-chart"><canvas id="chart-spo2"></canvas></div>
             </div>
-            <button id="btn-audio" class="btn-audio">Start Audio</button>
+
+            <div class="panel vitals-panel">
+                <h3>❤️ Pulse Rate (BPM)</h3>
+                <div class="small-chart"><canvas id="chart-pulse"></canvas></div>
+            </div>
         </aside>
 
-        <section class="charts-section">
-            <div class="chart-box">
-                <canvas id="chart-freq"></canvas>
-            </div>
-            <div class="chart-box-small">
-                <canvas id="chart-spo2"></canvas>
-            </div>
-            <div class="chart-box-small">
-                <canvas id="chart-pulse"></canvas>
-            </div>
+        <section class="panel bottom-panel">
+            <h3>Dominant Brain Frequency Over Time</h3>
+            <div class="main-chart"><canvas id="chart-freq"></canvas></div>
         </section>
+
     </div>
 
     <div id="modal-save" class="modal hidden">
-        <div class="modal-content">
-            <h3>Save Recording</h3>
-            <input type="text" id="filename-input">
-            <textarea id="notes-input" placeholder="Add session notes..."></textarea>
+        <div class="modal-content glass-panel">
+            <h3>💾 Save Session Data</h3>
+            <label class="modal-label">Filename</label>
+            <input type="text" id="filename-input" class="modern-input">
+            
+            <label class="modal-label">Context / Notes</label>
+            <textarea id="notes-input" class="modern-input" placeholder="Type session details here..."></textarea>
+            
             <div class="modal-btns">
-                <button id="btn-save-confirm">Save CSV</button>
-                <button id="btn-save-cancel">Discard</button>
+                <button id="btn-save-cancel" class="btn modern-btn">Discard</button>
+                <button id="btn-save-confirm" class="btn connect-btn">Save CSV</button>
             </div>
         </div>
     </div>
