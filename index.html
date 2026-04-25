@@ -2,90 +2,85 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
-    <title>Athena App</title>
+    <title>Athena Neuro-Hub v2</title>
     <link rel="stylesheet" href="style.css">
-    
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
-    </head>
+</head>
 <body>
-    <header class="ios-header">
-        <h1>Athena</h1>
-        <div class="connection-panel">
-            <button id="btn-connect" class="ios-btn">Connect Motor</button>
-            <span id="bt-status" class="status-disconnected">Disconnected</span>
+    <header class="dashboard-header">
+        <div class="main-controls">
+            <button id="btn-run" class="btn active">Run</button>
+            <button id="btn-hold" class="btn">Hold</button>
+            <button id="btn-record" class="btn btn-rec">⏺ Record</button>
+        </div>
+        <div class="connection-status">
+            <span id="status-text">Disconnected</span>
+            <button id="btn-connect" class="btn-connect">Connect Muse</button>
         </div>
     </header>
 
-    <main class="ios-main">
-        <section id="app-monitor" class="app-view active">
-            <div class="ios-card">
-                <h2>Real-Time Brainwaves</h2>
-                <div class="controls">
-                    <label>Smoothing (seconds):</label>
-                    <input type="number" id="smoothing-window" value="3" min="1" max="10" class="ios-input">
-                </div>
-                <div class="chart-container">
-                    <canvas id="monitor-chart"></canvas>
-                </div>
+    <div class="dashboard-grid">
+        <aside class="brain-waves-panel">
+            <h3>Brain Waves (%)</h3>
+            <div class="wave-item">
+                <label>Gamma (30-80Hz) <span id="txt-gamma">0%</span></label>
+                <div class="bar-bg"><div id="bar-gamma" class="bar-fill gamma"></div></div>
+            </div>
+            <div class="wave-item">
+                <label>Beta (12-30Hz) <span id="txt-beta">0%</span></label>
+                <div class="bar-bg"><div id="bar-beta" class="bar-fill beta"></div></div>
+            </div>
+            <div class="wave-item">
+                <label>Alpha (8-12Hz) <span id="txt-alpha">0%</span></label>
+                <div class="bar-bg"><div id="bar-alpha" class="bar-fill alpha"></div></div>
+            </div>
+            <div class="wave-item">
+                <label>Theta (4-8Hz) <span id="txt-theta">0%</span></label>
+                <div class="bar-bg"><div id="bar-theta" class="bar-fill theta"></div></div>
+            </div>
+            <div class="wave-item">
+                <label>Delta (0.5-4Hz) <span id="txt-delta">0%</span></label>
+                <div class="bar-bg"><div id="bar-delta" class="bar-fill delta"></div></div>
+            </div>
+        </aside>
+
+        <aside class="binaural-panel">
+            <h3>Binaural Controls</h3>
+            <div class="input-group">
+                <label>Target (Hz):</label>
+                <input type="number" id="bin-target" value="10">
+            </div>
+            <div class="input-group">
+                <label>Carrier (Hz):</label>
+                <input type="number" id="bin-carrier" value="400">
+            </div>
+            <button id="btn-audio" class="btn-audio">Start Audio</button>
+        </aside>
+
+        <section class="charts-section">
+            <div class="chart-box">
+                <canvas id="chart-freq"></canvas>
+            </div>
+            <div class="chart-box-small">
+                <canvas id="chart-spo2"></canvas>
+            </div>
+            <div class="chart-box-small">
+                <canvas id="chart-pulse"></canvas>
             </div>
         </section>
+    </div>
 
-        <section id="app-meditation" class="app-view hidden">
-            <div class="ios-card">
-                <h2>Binaural Meditation</h2>
-                <div class="warning">🎧 Please wear stereo headphones.</div>
-                
-                <div class="controls-stack">
-                    <div class="control-row">
-                        <label>Left Ear: <span id="val-left">200</span>Hz</label>
-                        <input type="range" id="freq-left" min="100" max="400" value="200" class="ios-slider">
-                    </div>
-                    <div class="control-row">
-                        <label>Right Ear: <span id="val-right">210</span>Hz</label>
-                        <input type="range" id="freq-right" min="100" max="400" value="210" class="ios-slider">
-                    </div>
-                    <div class="beat-display">
-                        Target Frequency: <strong id="beat-freq">10 Hz (Alpha)</strong>
-                    </div>
-                    <div class="audio-buttons">
-                        <button id="btn-audio-play" class="ios-btn btn-play">▶ Start</button>
-                        <button id="btn-audio-stop" class="ios-btn btn-stop">■ Stop</button>
-                    </div>
-                </div>
-                <div class="chart-container">
-                    <canvas id="meditation-chart"></canvas>
-                </div>
+    <div id="modal-save" class="modal hidden">
+        <div class="modal-content">
+            <h3>Save Recording</h3>
+            <input type="text" id="filename-input">
+            <textarea id="notes-input" placeholder="Add session notes..."></textarea>
+            <div class="modal-btns">
+                <button id="btn-save-confirm">Save CSV</button>
+                <button id="btn-save-cancel">Discard</button>
             </div>
-        </section>
-
-        <section id="app-sleep" class="app-view hidden">
-            <div class="ios-card">
-                <h2>Sleep Monitor</h2>
-                <div class="controls">
-                    <label>View Window (min):</label>
-                    <input type="number" id="sleep-window" value="10" min="1" max="600" class="ios-input">
-                </div>
-                <button id="btn-export" class="ios-btn btn-export">Export CSV</button>
-                <div class="chart-container sleep-chart-wrapper">
-                    <canvas id="sleep-chart"></canvas>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <nav id="main-menu" class="ios-tab-bar">
-        <button class="nav-btn active" data-target="app-monitor">
-            <span class="icon">🧠</span><br>Monitor
-        </button>
-        <button class="nav-btn" data-target="app-meditation">
-            <span class="icon">🎧</span><br>Binaural
-        </button>
-        <button class="nav-btn" data-target="app-sleep">
-            <span class="icon">🌙</span><br>Sleep
-        </button>
-    </nav>
+        </div>
+    </div>
 
     <script src="app.js"></script>
 </body>
