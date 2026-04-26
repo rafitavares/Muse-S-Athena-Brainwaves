@@ -1,23 +1,25 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Athena Pro Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Athena Modular Dashboard</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <header class="glass-header">
         <div class="brand">
-            <span class="logo-icon">🧠</span> ATHENA <span class="badge">PRO</span>
+            <span class="logo-icon">🧠</span>
+            ATHENA <span class="badge">MODULAR</span>
         </div>
-        
+
         <div class="main-controls">
             <button id="btn-run" class="btn modern-btn active"><span class="icon">⏵</span> RUN</button>
             <button id="btn-hold" class="btn modern-btn"><span class="icon">⏸</span> HOLD</button>
             <button id="btn-record" class="btn record-btn"><span class="icon">⏺</span> RECORD</button>
         </div>
-        
+
         <div class="connection-status">
             <div id="status-dot" class="dot disconnected"></div>
             <span id="status-text">Disconnected</span>
@@ -25,21 +27,30 @@
         </div>
     </header>
 
-    <div class="dashboard-layout">
-        
-        <aside class="panel left-panel">
-            <h3>Brain Waves Activity</h3>
+    <main class="dashboard-layout">
+        <section class="panel eeg-panel">
+            <div class="panel-title-row">
+                <div>
+                    <h3>EEG Module</h3>
+                    <p class="panel-subtitle">Delta, Theta, Alpha, Beta e Gamma em tempo real</p>
+                </div>
+                <div class="quality-box">
+                    <span class="quality-label">Quality</span>
+                    <span id="eeg-quality" class="quality-value">--%</span>
+                </div>
+            </div>
+
             <div class="waves-container">
                 <div class="wave-item">
-                    <label>Gamma <span class="hz">(30-80Hz)</span> <span id="txt-gamma" class="perc">0%</span></label>
+                    <label>Gamma <span class="hz">(30-45Hz)</span> <span id="txt-gamma" class="perc">0%</span></label>
                     <div class="bar-bg"><div id="bar-gamma" class="bar-fill gamma"></div></div>
                 </div>
                 <div class="wave-item">
-                    <label>Beta <span class="hz">(12-30Hz)</span> <span id="txt-beta" class="perc">0%</span></label>
+                    <label>Beta <span class="hz">(13-30Hz)</span> <span id="txt-beta" class="perc">0%</span></label>
                     <div class="bar-bg"><div id="bar-beta" class="bar-fill beta"></div></div>
                 </div>
                 <div class="wave-item">
-                    <label>Alpha <span class="hz">(8-12Hz)</span> <span id="txt-alpha" class="perc">0%</span></label>
+                    <label>Alpha <span class="hz">(8-13Hz)</span> <span id="txt-alpha" class="perc">0%</span></label>
                     <div class="bar-bg"><div id="bar-alpha" class="bar-fill alpha"></div></div>
                 </div>
                 <div class="wave-item">
@@ -51,51 +62,69 @@
                     <div class="bar-bg"><div id="bar-delta" class="bar-fill delta"></div></div>
                 </div>
             </div>
-        </aside>
+        </section>
 
         <aside class="right-panel">
-            <div class="panel binaural-panel">
+            <section class="panel module-card">
+                <h3>❤️ Pulse Module</h3>
+                <div class="big-metric">
+                    <span id="pulse-value">--</span>
+                    <small>BPM</small>
+                </div>
+                <div class="small-status" id="pulse-status">Aguardando dados PPG</div>
+                <div class="small-chart"><canvas id="chart-pulse"></canvas></div>
+            </section>
+
+            <section class="panel module-card">
+                <h3>🫁 SpO₂ Module</h3>
+                <div class="big-metric">
+                    <span id="spo2-value">--</span>
+                    <small>%</small>
+                </div>
+                <div class="small-status" id="spo2-status">Módulo experimental / não calibrado</div>
+                <div class="small-chart"><canvas id="chart-spo2"></canvas></div>
+            </section>
+
+            <section class="panel binaural-panel">
                 <h3>🎧 Binaural Engine</h3>
                 <div class="binaural-controls">
                     <div class="input-group">
                         <label>Target (Hz)</label>
-                        <input type="number" id="bin-target" value="10">
+                        <input type="number" id="bin-target" value="10" min="0.1" step="0.1">
                     </div>
                     <div class="input-group">
                         <label>Carrier (Hz)</label>
-                        <input type="number" id="bin-carrier" value="400">
+                        <input type="number" id="bin-carrier" value="400" min="20" step="1">
                     </div>
                     <button id="btn-audio" class="btn audio-btn">Start Synth</button>
                 </div>
-            </div>
-
-            <div class="panel vitals-panel">
-                <h3>🫁 SpO2 Oxygenation (%)</h3>
-                <div class="small-chart"><canvas id="chart-spo2"></canvas></div>
-            </div>
-
-            <div class="panel vitals-panel">
-                <h3>❤️ Pulse Rate (BPM)</h3>
-                <div class="small-chart"><canvas id="chart-pulse"></canvas></div>
-            </div>
+            </section>
         </aside>
 
         <section class="panel bottom-panel">
-            <h3>Dominant Brain Frequency Over Time</h3>
+            <div class="panel-title-row">
+                <div>
+                    <h3>Dominant Brain Frequency</h3>
+                    <p class="panel-subtitle">Frequência dominante calculada pela janela EEG</p>
+                </div>
+                <div class="quality-box">
+                    <span class="quality-label">Dominant</span>
+                    <span id="dominant-value" class="quality-value">-- Hz</span>
+                </div>
+            </div>
             <div class="main-chart"><canvas id="chart-freq"></canvas></div>
         </section>
-
-    </div>
+    </main>
 
     <div id="modal-save" class="modal hidden">
         <div class="modal-content glass-panel">
             <h3>💾 Save Session Data</h3>
             <label class="modal-label">Filename</label>
             <input type="text" id="filename-input" class="modern-input">
-            
+
             <label class="modal-label">Context / Notes</label>
             <textarea id="notes-input" class="modern-input" placeholder="Type session details here..."></textarea>
-            
+
             <div class="modal-btns">
                 <button id="btn-save-cancel" class="btn modern-btn">Discard</button>
                 <button id="btn-save-confirm" class="btn connect-btn">Save CSV</button>
