@@ -13,6 +13,16 @@ from typing import Dict, List, Optional
 import numpy as np
 from scipy import signal
 
+def trapezoid_integral(y, x):
+    """
+    Compatibilidade NumPy:
+    - NumPy novo: np.trapezoid
+    - NumPy antigo: np.trapz
+    """
+    if hasattr(np, "trapezoid"):
+        return np.trapezoid(y, x)
+    return np.trapz(y, x)
+
 
 EEG_CHANNELS_4 = ["TP9", "AF7", "AF8", "TP10"]
 EEG_CHANNELS_8 = ["TP9", "AF7", "AF8", "TP10", "FPz", "AUX_R", "AUX_L", "AUX"]
@@ -188,7 +198,7 @@ class EEGModule:
             mask = (freqs >= low) & (freqs < high)
             if not np.any(mask):
                 return 0.0
-            return float(np.trapz(psd[mask], freqs[mask]))
+            return float(trapezoid_integral(psd[mask], freqs[mask]))
 
         delta = band_power(0.5, 4.0)
         theta = band_power(4.0, 8.0)

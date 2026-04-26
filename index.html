@@ -3,122 +3,186 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Athena Modular Dashboard</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>Muse S Athena Brain analyses</title>
+
+    <link rel="stylesheet" href="style.css?v=3.1">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8/hammer.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.2.0/dist/chartjs-plugin-zoom.min.js"></script>
 </head>
+
 <body>
-    <header class="glass-header">
-        <div class="brand">
+    <header class="topbar">
+        <div class="program-title">
             <span class="logo-icon">🧠</span>
-            ATHENA <span class="badge">MODULAR</span>
+            <div>
+                <div class="program-name">Muse S Athena Brain analyses</div>
+                <div class="program-subtitle">Local EEG · Pulse · SpO₂ · Movement Dashboard</div>
+            </div>
         </div>
 
-        <div class="main-controls">
+        <div class="top-controls">
             <button id="btn-run" class="btn modern-btn active"><span class="icon">⏵</span> RUN</button>
             <button id="btn-hold" class="btn modern-btn"><span class="icon">⏸</span> HOLD</button>
             <button id="btn-record" class="btn record-btn"><span class="icon">⏺</span> RECORD</button>
+            <button id="btn-reset-zoom" class="btn modern-btn"><span class="icon">↺</span> RESET ZOOM</button>
         </div>
 
-        <div class="connection-status">
-            <div id="status-dot" class="dot disconnected"></div>
-            <span id="status-text">Disconnected</span>
-            <button id="btn-connect" class="btn connect-btn"><span class="icon">⚡</span> CONNECT</button>
+        <div class="top-status">
+            <div class="status-pill">
+                <span class="status-label">Quality</span>
+                <span id="top-quality" class="status-value">--%</span>
+            </div>
+
+            <div class="status-pill">
+                <span class="status-label">Battery</span>
+                <span id="top-battery" class="status-value">--%</span>
+            </div>
+
+            <div class="connection-status">
+                <div id="status-dot" class="dot disconnected"></div>
+                <span id="status-text">Disconnected</span>
+                <button id="btn-connect" class="btn connect-btn"><span class="icon">⚡</span> CONECTAR</button>
+            </div>
         </div>
     </header>
 
-    <main class="dashboard-layout">
-        <section class="panel eeg-panel">
-            <div class="panel-title-row">
-                <div>
-                    <h3>EEG Module</h3>
-                    <p class="panel-subtitle">Delta, Theta, Alpha, Beta e Gamma em tempo real</p>
+    <main class="main-layout">
+        <section class="panel chart-panel">
+            <div class="panel-header">
+                <div class="panel-title-block">
+                    <h2>Brain Waves Analysis</h2>
+                    <p>Scroll sobre o gráfico = zoom no eixo X. O gráfico de pulso acompanha o mesmo horário.</p>
                 </div>
-                <div class="quality-box">
-                    <span class="quality-label">Quality</span>
-                    <span id="eeg-quality" class="quality-value">--%</span>
+
+                <div class="wave-checkboxes">
+                    <label><input type="checkbox" id="chk-dominant" checked> Dominant</label>
+                    <label><input type="checkbox" id="chk-delta" checked> Delta</label>
+                    <label><input type="checkbox" id="chk-theta" checked> Theta</label>
+                    <label><input type="checkbox" id="chk-alpha" checked> Alpha</label>
+                    <label><input type="checkbox" id="chk-beta" checked> Beta</label>
+                    <label><input type="checkbox" id="chk-gamma" checked> Gamma</label>
                 </div>
             </div>
 
-            <div class="waves-container">
-                <div class="wave-item">
-                    <label>Gamma <span class="hz">(30-45Hz)</span> <span id="txt-gamma" class="perc">0%</span></label>
-                    <div class="bar-bg"><div id="bar-gamma" class="bar-fill gamma"></div></div>
-                </div>
-                <div class="wave-item">
-                    <label>Beta <span class="hz">(13-30Hz)</span> <span id="txt-beta" class="perc">0%</span></label>
-                    <div class="bar-bg"><div id="bar-beta" class="bar-fill beta"></div></div>
-                </div>
-                <div class="wave-item">
-                    <label>Alpha <span class="hz">(8-13Hz)</span> <span id="txt-alpha" class="perc">0%</span></label>
-                    <div class="bar-bg"><div id="bar-alpha" class="bar-fill alpha"></div></div>
-                </div>
-                <div class="wave-item">
-                    <label>Theta <span class="hz">(4-8Hz)</span> <span id="txt-theta" class="perc">0%</span></label>
-                    <div class="bar-bg"><div id="bar-theta" class="bar-fill theta"></div></div>
-                </div>
-                <div class="wave-item">
-                    <label>Delta <span class="hz">(0.5-4Hz)</span> <span id="txt-delta" class="perc">0%</span></label>
-                    <div class="bar-bg"><div id="bar-delta" class="bar-fill delta"></div></div>
-                </div>
+            <div class="chart-main">
+                <canvas id="chart-waves"></canvas>
             </div>
         </section>
 
-        <aside class="right-panel">
-            <section class="panel module-card">
-                <h3>❤️ Pulse Module</h3>
-                <div class="big-metric">
+        <section class="panel chart-panel">
+            <div class="panel-header">
+                <div class="panel-title-block">
+                    <h2>Pulse Rate</h2>
+                    <p>Mesmo eixo X do gráfico superior para comparação temporal.</p>
+                </div>
+
+                <div class="metric-inline">
                     <span id="pulse-value">--</span>
                     <small>BPM</small>
                 </div>
-                <div class="small-status" id="pulse-status">Aguardando dados PPG</div>
-                <div class="small-chart"><canvas id="chart-pulse"></canvas></div>
-            </section>
+            </div>
 
-            <section class="panel module-card">
-                <h3>🫁 SpO₂ Module</h3>
+            <div class="chart-main">
+                <canvas id="chart-pulse"></canvas>
+            </div>
+        </section>
+
+        <section class="modules-row">
+            <article class="panel module-card">
+                <h3>🫁 SpO₂</h3>
                 <div class="big-metric">
                     <span id="spo2-value">--</span>
                     <small>%</small>
                 </div>
-                <div class="small-status" id="spo2-status">Módulo experimental / não calibrado</div>
-                <div class="small-chart"><canvas id="chart-spo2"></canvas></div>
-            </section>
+                <div id="spo2-status" class="small-status">Experimental / not calibrated</div>
+                <div class="mini-line">
+                    <span>O₂ index</span>
+                    <strong id="oxygen-index">--</strong>
+                </div>
+            </article>
 
-            <section class="panel binaural-panel">
-                <h3>🎧 Binaural Engine</h3>
+            <article class="panel module-card binaural-panel">
+                <h3>🎧 Binaural</h3>
                 <div class="binaural-controls">
                     <div class="input-group">
-                        <label>Target (Hz)</label>
+                        <label>Target Hz</label>
                         <input type="number" id="bin-target" value="10" min="0.1" step="0.1">
                     </div>
+
                     <div class="input-group">
-                        <label>Carrier (Hz)</label>
+                        <label>Carrier Hz</label>
                         <input type="number" id="bin-carrier" value="400" min="20" step="1">
                     </div>
+
                     <button id="btn-audio" class="btn audio-btn">Start Synth</button>
                 </div>
-            </section>
-        </aside>
+            </article>
 
-        <section class="panel bottom-panel">
-            <div class="panel-title-row">
-                <div>
-                    <h3>Dominant Brain Frequency</h3>
-                    <p class="panel-subtitle">Frequência dominante calculada pela janela EEG</p>
+            <article class="panel module-card wave-bars-card">
+                <h3>Brain Waves %</h3>
+
+                <div class="waves-container">
+                    <div class="wave-item">
+                        <label>Gamma <span class="hz">(30-45Hz)</span> <span id="txt-gamma" class="perc">0%</span></label>
+                        <div class="bar-bg"><div id="bar-gamma" class="bar-fill gamma"></div></div>
+                    </div>
+
+                    <div class="wave-item">
+                        <label>Beta <span class="hz">(13-30Hz)</span> <span id="txt-beta" class="perc">0%</span></label>
+                        <div class="bar-bg"><div id="bar-beta" class="bar-fill beta"></div></div>
+                    </div>
+
+                    <div class="wave-item">
+                        <label>Alpha <span class="hz">(8-13Hz)</span> <span id="txt-alpha" class="perc">0%</span></label>
+                        <div class="bar-bg"><div id="bar-alpha" class="bar-fill alpha"></div></div>
+                    </div>
+
+                    <div class="wave-item">
+                        <label>Theta <span class="hz">(4-8Hz)</span> <span id="txt-theta" class="perc">0%</span></label>
+                        <div class="bar-bg"><div id="bar-theta" class="bar-fill theta"></div></div>
+                    </div>
+
+                    <div class="wave-item">
+                        <label>Delta <span class="hz">(0.5-4Hz)</span> <span id="txt-delta" class="perc">0%</span></label>
+                        <div class="bar-bg"><div id="bar-delta" class="bar-fill delta"></div></div>
+                    </div>
                 </div>
-                <div class="quality-box">
-                    <span class="quality-label">Dominant</span>
-                    <span id="dominant-value" class="quality-value">-- Hz</span>
+            </article>
+
+            <article class="panel module-card">
+                <h3>🧍 Posture / Movement</h3>
+                <div class="big-metric">
+                    <span id="movement-value">--</span>
+                    <small>score</small>
                 </div>
-            </div>
-            <div class="main-chart"><canvas id="chart-freq"></canvas></div>
+                <div id="posture-status" class="small-status">Waiting IMU</div>
+                <div class="mini-line">
+                    <span>Gyro</span>
+                    <strong id="gyro-value">--</strong>
+                </div>
+            </article>
+
+            <article class="panel module-card">
+                <h3>🌬️ Respiration</h3>
+                <div class="big-metric">
+                    <span id="resp-value">--</span>
+                    <small>rpm</small>
+                </div>
+                <div id="resp-status" class="small-status">Movement estimate</div>
+                <div class="mini-line">
+                    <span>Confidence</span>
+                    <strong id="resp-confidence">--</strong>
+                </div>
+            </article>
         </section>
     </main>
 
     <div id="modal-save" class="modal hidden">
         <div class="modal-content glass-panel">
             <h3>💾 Save Session Data</h3>
+
             <label class="modal-label">Filename</label>
             <input type="text" id="filename-input" class="modern-input">
 
@@ -132,6 +196,6 @@
         </div>
     </div>
 
-    <script src="app.js"></script>
+    <script src="app.js?v=3.1"></script>
 </body>
 </html>
